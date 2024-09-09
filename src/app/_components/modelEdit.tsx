@@ -24,11 +24,9 @@ import {
 import { Input } from "~/components/ui/input";
 
 import { api } from "~/trpc/react";
-import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
 
 export default function ModalEdit({ id }: { id: number }) {
   const formSchema = z.object({

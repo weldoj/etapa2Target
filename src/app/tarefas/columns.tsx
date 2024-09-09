@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@radix-ui/react-dropdown-menu";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -16,9 +16,9 @@ import { api } from "~/trpc/react";
 
 export type Task = {
   id: number;
-  title: String;
-  description: String;
-  status: String;
+  title: string;
+  description: string;
+  status: string;
   date: Date;
 };
 

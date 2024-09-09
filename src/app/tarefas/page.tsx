@@ -1,7 +1,8 @@
 import { api } from "~/trpc/server"
-import { Task, columns } from "./columns"
+import { columns } from "./columns"
+import type { Task } from "./columns"
+
 import { DataTable } from "./data-table"
-import ModalCreate from "../_components/modelCreate"
  
 async function getData(): Promise<Task[]> {
   // Fetch data from your API here.

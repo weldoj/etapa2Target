@@ -3,12 +3,12 @@ import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Table,
   TableHeader,
@@ -19,16 +19,20 @@ import {
 } from "~/components/ui/table";
 import React, { useState } from "react";
 import ModalCreate from "../_components/modelCreate";
-import { useRouter } from "next/navigation";
-import { Label } from "@radix-ui/react-label";
 import ModalEdit from "../_components/modelEdit";
+import { useRouter } from "next/navigation";
+import { InformativeDialog } from "../_components/informativeDialog";
+
+interface DataWithId {
+  id: number;
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends DataWithId, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -44,17 +48,25 @@ export function DataTable<TData, TValue>({
     },
   });
   console.log(rowSelection);
+  const router = useRouter();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [response, setResponse] = useState("");
   const { mutate } = api.task.deleteUnique.useMutation({
     onSuccess: () => {
-      setResponse("Parceiro deletado com sucesso!");
+      router.refresh();
+      setResponse("Task deletada com sucesso!");
+      setDialogOpen(true);  
+
     },
     onError: () => {
-      setResponse("Ocorreu um erro ao deletar o parceiro!");
+      setResponse("Ocorreu um erro ao deletar a task!");
+      setDialogOpen(true);  
+
     },
   });
   const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const id = selectedRows.length > 0 ? selectedRows[0].original.id : null;
+  const id =
+    selectedRows.length > 0 ? Number(selectedRows[0]?.original.id) || 0 : 0;
 
   console.log(id);
   console.log(id);
@@ -124,11 +136,17 @@ export function DataTable<TData, TValue>({
         >
           deletar linha selecionada
         </Button>
-        <Label className="text-vermelho-excelencia">{response}</Label>
+        <InformativeDialog data={response} open={dialogOpen} onClose={() => setDialogOpen(false)} />
 
         <ModalCreate />
         <div className="flex w-full items-center justify-end pr-6">
-          <ModalEdit id={selectedRows.length > 0 ? selectedRows[0].original.id : null} />
+          <ModalEdit
+            id={
+              selectedRows.length > 0
+                ? Number(selectedRows[0]?.original.id) || 0
+                : 0
+            }
+          />
         </div>
         <div className="flex space-x-2">
           <Button
