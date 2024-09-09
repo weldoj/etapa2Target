@@ -1,14 +1,20 @@
 Para o código rodar é necessário as chaves de ambiente, para cria-las é simples:
   link para criar as variaves(chaves) de ambientes do google: https://console.cloud.google.com/projectselector2/google/maps-apis/credentials?utm_source=Docs_CreateAPIKey&utm_content=Docs_maps-backend&hl=pt-br
+  ===================================================================================================================================
+  
   comando para colocar no terminar e criar a chave de ambiente pro "NEXTAUTH_SECRET=": openssl rand -base64 32
+  ===================================================================================================================================
 Após criar todas as váriaves de ambiente é só coloca-las no arquivo .env( caso não tenha na lista de arquivos do repositório, é só criar) igual é mostrado no arquivo .env.example.
+
+=====================================================================================================================================
+
   
 
 para executar:
 pnpm build
 pnpm start
 
-
+======================================================================================================================================
 
 
 
