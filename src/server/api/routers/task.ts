@@ -225,4 +225,51 @@ export const taskRouter = createTRPCRouter({
         });
       }
     }),
+
+    deleteMany: protectedProcedure
+  .input(
+    z.object({
+      ids: z.array(z.number()), // Aceita um array de IDs
+    }),
+  )
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const deletedTasks = await ctx.db.task.deleteMany({
+        where: {
+          id: {
+            in: input.ids, // Remove registros com IDs na lista fornecida
+          },
+        },
+      });
+      return deletedTasks;
+    } catch (err) {
+      if (err instanceof PrismaClientKnownRequestError) {
+        if (err.code === "P2025") {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Erro na exclusão das instâncias: nenhuma instância encontrada",
+            cause: err,
+          });
+        }
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Erro na exclusão das instâncias",
+          cause: err,
+        });
+      }
+      if (err instanceof PrismaClientValidationError) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Erro na passagem dos campos: campo necessário faltando ou campo de tipo inadequado",
+          cause: err,
+        });
+      }
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Erro no servidor",
+        cause: err,
+      });
+    }
+  }),
+
 });

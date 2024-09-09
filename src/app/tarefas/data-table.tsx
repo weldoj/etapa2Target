@@ -51,7 +51,7 @@ export function DataTable<TData extends DataWithId, TValue>({
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [response, setResponse] = useState("");
-  const { mutate } = api.task.deleteUnique.useMutation({
+  const { mutate } = api.task.deleteMany.useMutation({
     onSuccess: () => {
       router.refresh();
       setResponse("Task deletada com sucesso!");
@@ -65,12 +65,11 @@ export function DataTable<TData extends DataWithId, TValue>({
     },
   });
   const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const id =
-    selectedRows.length > 0 ? Number(selectedRows[0]?.original.id) || 0 : 0;
+  const selectedIds = selectedRows.map(row => row.original.id);
 
-  console.log(id);
-  console.log(id);
-  console.log(id);
+  console.log(selectedIds);
+  console.log(selectedIds);
+  console.log(selectedIds);
   return (
     <div>
       <div className="rounded-md border">
@@ -129,10 +128,12 @@ export function DataTable<TData extends DataWithId, TValue>({
       </div>
       <div className="flex items-center justify-between space-x-2 pt-16">
         <Button
-          onClick={() => {
-            setResponse("");
-            mutate({ id });
-          }}
+         onClick={() => {
+          setResponse("");
+          if (selectedIds.length > 0) {
+            mutate({ ids: selectedIds }); // Pass the selected IDs to deleteMany
+          }
+        }}
         >
           deletar linha selecionada
         </Button>
