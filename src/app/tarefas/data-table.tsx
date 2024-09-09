@@ -67,9 +67,6 @@ export function DataTable<TData extends DataWithId, TValue>({
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedIds = selectedRows.map(row => row.original.id);
 
-  console.log(selectedIds);
-  console.log(selectedIds);
-  console.log(selectedIds);
   return (
     <div>
       <div className="rounded-md border">
