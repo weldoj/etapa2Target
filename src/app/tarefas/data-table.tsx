@@ -20,17 +20,17 @@ import {
 import React, { useState } from "react";
 import ModalCreate from "../_components/modelCreate";
 import { useRouter } from "next/navigation";
+import { Label } from "@radix-ui/react-label";
+import ModalEdit from "../_components/modelEdit";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  id: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  id
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
@@ -43,17 +43,22 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+  console.log(rowSelection);
   const [response, setResponse] = useState("");
-  const {mutate} = api.task.deleteUnique.useMutation({
+  const { mutate } = api.task.deleteUnique.useMutation({
     onSuccess: () => {
-      router.refresh();
       setResponse("Parceiro deletado com sucesso!");
     },
     onError: () => {
       setResponse("Ocorreu um erro ao deletar o parceiro!");
     },
   });
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const id = selectedRows.length > 0 ? selectedRows[0].original.id : null;
 
+  console.log(id);
+  console.log(id);
+  console.log(id);
   return (
     <div>
       <div className="rounded-md border">
@@ -106,7 +111,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex-1 text-sm text-muted-foreground pt-4">
+      <div className="flex-1 pt-4 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
@@ -114,12 +119,17 @@ export function DataTable<TData, TValue>({
         <Button
           onClick={() => {
             setResponse("");
-            mutate({ id }); 
+            mutate({ id });
           }}
         >
           deletar linha selecionada
         </Button>
-        <ModalCreate/>
+        <Label className="text-vermelho-excelencia">{response}</Label>
+
+        <ModalCreate />
+        <div className="flex w-full items-center justify-end pr-6">
+          <ModalEdit id={selectedRows.length > 0 ? selectedRows[0].original.id : null} />
+        </div>
         <div className="flex space-x-2">
           <Button
             variant="outline"
@@ -139,7 +149,6 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
       </div>
-      
     </div>
   );
 }
