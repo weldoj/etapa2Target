@@ -12,6 +12,7 @@ Após criar todas as váriaves de ambiente é só coloca-las no arquivo .env( ca
 
 para executar:
 pnpm build
+
 pnpm start
 
 ======================================================================================================================================
