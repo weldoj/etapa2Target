@@ -125,6 +125,63 @@ export const taskRouter = createTRPCRouter({
       }
     }),
 
+    updateStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        status: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { id, ...data } = input;
+        const updatedTask = await ctx.db.task.update({
+          where: { id },
+          data: {
+              status: data.status.length? data.status: undefined,
+          },
+        });
+        return updatedTask;
+      } catch (err) {
+        if (err instanceof PrismaClientKnownRequestError) {
+          if (err.code === "P2025") {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message:
+                "Erro na atualização da instância: instância não encontrada",
+              cause: err,
+            });
+          }
+          if (err.code === "P2002") {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "Erro na atualização da instância: campo único já existente",
+              cause: err,
+            });
+          }
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Erro na atualização da instância",
+            cause: err,
+          });
+        }
+        if (err instanceof PrismaClientValidationError) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Erro na passagem dos campos: campo necessário faltando ou campo de tipo inadequado",
+            cause: err,
+          });
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erro no servidor",
+          cause: err,
+        });
+      }
+    }),
+
   deleteUnique: protectedProcedure
     .input(
       z.object({

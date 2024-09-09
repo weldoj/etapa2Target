@@ -12,6 +12,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { api } from "~/trpc/react";
 
 export type Task = {
   id: number;
@@ -66,24 +67,33 @@ export const columns: ColumnDef<Task>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const task = row.original;
+      const updateTask = api.task.updateStatus.useMutation();
+
+      const handleStatusChange = (newStatus: string) => {
+        updateTask.mutate({
+          id: task.id,
+          status: newStatus,
+          
+        });
+      };
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <DropdownMenu >
+          <DropdownMenuTrigger asChild >
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-slate-400 p-2">
             <DropdownMenuLabel>Status</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            ></DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Pendente</DropdownMenuItem>
-            <DropdownMenuItem>Concluido</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleStatusChange("pendente")}>
+              Pendente
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleStatusChange("concluido")}>
+              Concluído</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
